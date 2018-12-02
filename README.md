@@ -2,29 +2,31 @@
 # Introducing pgFaaS
 
 
-pgFaaS stands for *PostGresql Functions As A Service*, and aims at providing a simple way to perform geo-processing on HTTP.
+pgFaaS stands for *PostGresql Functions As A Service*, and aims at providing a simple way to perform geo-processing on hosted geographic data using a ReSTful API.
 
-At the current stage. this is more of a proof-of-concept than a polished product, but it is stanle enought to be used in production, 
+At the current stage. this is more of a proof-of-concept than a polished product, but it is stanle enough to be used in production, 
 albeit with rough edges when it comes to debugging (error messages are still difficult to understand). 
 
 
 ## What is it for?
 
-To deploy and use Node.js scripts that access PostgreSQL databases over HTTP in a simple and scalable way.
+To deploy and use Node.js scripts that run SQL queries against PostgreSQL databases over HTTP in a simple and scalable way.
 
-A ReSTful API (and a web user interface) can be used to deploy/uneploy/update and invoke scripts, mkaing it easy to develop APIs that can power front-end applications.
+A ReSTful API (and a web user interface) can be used to deploy, update, remove, and invoke scripts, making it easy to develop APIs to power front-end applications.
 
 For the time being, only Node.js can be used to develop scripts, but pgFaaS can be extended to other languages without much effort. 
 
 
 ## Why should I use it?
+## Why should I use it?
 
-In short, there is no easier way to to add geo-processing functionality to web applications on hosted data.  
+In short, there is no easier way to to add geo-processing functionality to web applications on hosted data.
+And let's not forget how powerful and performing are SQL queries augmented by PostGIS store functions (and there are more than a hundred of such functiona, working on vector, raster, and routing data).    
 
 
 ## How does it work?
 
-A ReSTful API is used to deploy scripts than can access database data and perform geo-procvessing using PostGIS. 
+A ReSTful API is used to deploy scripts than can access PostgreSQL data and perform geo-processing using PostGIS (SQL statements are embedded into JavScript programs). 
 No connection parameters are set at this stage, as eveything is done behind the scenes when configuring pgFaaS. 
 Once the script is deployed, it can be invoked using POST HTTP requests with a JSON body (JSON is expected to be returned as well).
 
@@ -35,7 +37,7 @@ curl -XPOST "http://<server>/api/function/namespaces/lmoran"\
   --data  @math.json
 ```
 
-As you may have noticed, the JavaScript program has to be encapsulated in a JSON before being deployed, which can be accomplished by storing to a file the ouput of thei program:
+As you may have noticed, the JavaScript program has to be encapsulated in a JSON before being deployed, which can be accomplished by storing to a file the ouput of this program:
 ```javascript
 const math = {
   name: 'math',
@@ -92,10 +94,10 @@ curl -XPOST "http://sandbox.pgfaas.aurin.org.au/api/function/namespaces/sample/m
   --header "Content-Type:application/json"\
   --data '{"verb": "add", "a": 3 , "b": 6}'
 ``` 
-(Please note the use of the 'verb' parameter, that acts as a "switch" to invoke different functions within the script.)
+(Please note the use of the `verb` parameter, that acts as a "switch" to invoke different functions within the script.)
 
 
-A more meaningful example:
+A more meaningful example using SQL:
 ```javascript
 module.exports = {
   knnbusstops: (sqlexec, req, callback) => {
@@ -137,28 +139,33 @@ module.exports = {
 };  
 ```
 
-This function computes the K-nearest bus stops in New Caledonia to a point (passed in the POST body as 'x' and 'y' parameters), and returns them as a GeoJSON document. 
+This function computes the K-nearest bus stops (Open Street Map data) to a point passed in the POST body as `x` and `y` parameters, and returns them as a GeoJSON document.
+The SQL statement is passed as a string, with an array of parameters to improve readibility.
+
+More than one statement can be sent, nesting calls to `sq;exec.query` in callbacks. 
 
 
 ## What's under the hood?
 
-Every time a script is deployed, a Docker container is created (or re-created) and then OpenFaaS takes care of scale it up. or down. according to workload.
-More specifically, the base Docker image is the same for every pgFaaS container, but eh scripts (and dtabase connection parameters) are sent as environment variables to it, making every container run a differnt script without the need to build a different image.   
+Every time a script is deployed, a Docker container is created (or re-created) and then OpenFaaS takes care of scaling it up or down. according to workload.
 
-![pgFaaS deployment diagram](https://raw.githubusercontent.com/lmoran/pgfaasblog/master/deployment.png "pgFaaS deploymemnt diagram")
+More specifically, the base Docker image is the same for every pgFaaS container, but the scripts (and dtabase connection parameters) are sent as environment variables to it, making every container run a differnt script without the need to build a different image.   
+
+![pgFaaS deployment diagram](https://raw.githubusercontent.com/lmoran/pgfaasblog/master/architecture.png "pgFaaS deploymemnt diagram")
 
 
-## SQL access to database, isn't it unsafe?
+## SQL access to database a... unsafe, isn't it?
 
-By default, users cannot modify the database, are limited to one schema of one database, and the Docker containers are constrained in what resources (CPUs, RAM) they can consume.
-In addition, scripts could be screened for malicious code during deployment (this feature has not been developed yet.)  
+By default, users cannot modify the database and are limited to one schema of one database; in addition Docker containers created by pgFaaS are constrained in what resources (CPUs, RAM) they can consume.
+
+In a further development, scripts could be screened for malicious code during deployment (this feature has not been developed yet.)  
 
 
 ## Where can I get more info?
 
-You can play with a live pgFaaS istance in [the sandbox](http://sandbox.pgfaas.aurin.org.au).
+You can play with a live pgFaaS istance in [the sandbox](http://sandbox.pgfaas.aurin.org.au/ui).
  
-More background can be inferred by viewing the presentation I gave at the [FOSS4G SotM Oceania '18 prez](https://www.youtube.com/watch?v=mhZcpuliMxI)
+More background can be inferred by viewing the presentation I gave at the [FOSS4G SotM Oceania '18 prez](https://www.youtube.com/watch?v=mhZcpuliMxI),
 or just read [the slides](https://docs.google.com/presentation/d/1D6HrRwEBD93NiIH4OxK7XgkwGulOHRIpYsuu6mNSG84/edit?usp=sharing) if you're in a hurry.
 
 
