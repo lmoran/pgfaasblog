@@ -176,10 +176,6 @@ The [AURIN project](https://aurin.org.au) is a government-backed organization th
 ## Kudos
 
 Powered by:
+[![PostgreSQL](https://raw.githubusercontent.com/AURIN/pgFaas/master/assets/postgresql.png)](https://www.postgresql.org)
+[![OpenFaaS](https://raw.githubusercontent.com/AURIN/pgFaas/master/assets/openfaas.png)](https://www.openfaas.com)
 
-<a href="https://www.postgresql.org">
-  <img src="https://raw.githubusercontent.com/AURIN/pgFaas/master/assets/postgresql.png" title="PostgreSQL">
-</a>
-<a href="https://www.openfaas.com">
-  <img src="https://raw.githubusercontent.com/AURIN/pgFaas/master/assets/openfaas.png" title="OpenFaaS">
-</a>
