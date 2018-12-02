@@ -18,7 +18,6 @@ For the time being, only Node.js can be used to develop scripts, but pgFaaS can 
 
 
 ## Why should I use it?
-## Why should I use it?
 
 In short, there is no easier way to to add geo-processing functionality to web applications on hosted data.
 And let's not forget how powerful and performing are SQL queries augmented by PostGIS store functions (and there are more than a hundred of such functiona, working on vector, raster, and routing data).    
@@ -28,7 +27,7 @@ And let's not forget how powerful and performing are SQL queries augmented by Po
 
 A ReSTful API is used to deploy scripts than can access PostgreSQL data and perform geo-processing using PostGIS (SQL statements are embedded into JavScript programs). 
 No connection parameters are set at this stage, as eveything is done behind the scenes when configuring pgFaaS. 
-Once the script is deployed, it can be invoked using POST HTTP requests with a JSON body (JSON is expected to be returned as well).
+Once the script is deployed, it can be invoked using HTTP POST requests with a JSON body (JSON is expected to be returned as well).
 
 For instance, deploying a script contained in a file named `math.json` can be accomplished by running this HTTP POST request:
 ```bash
